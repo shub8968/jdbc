@@ -1,0 +1,62 @@
+Kafka Installation and Configuration
+
+Step 1: Download Apache Kafka.
+
+$ wget http://www-us.apache.org/dist/kafka/2.4.0/kafka_2.13-2.4.0.tgz
+
+Step 2: Extract the downloaded artifact with command. After extracting, we will get a folder named kafka_2.11-2.3.0.
+
+$ tar xzf kafka_2.13-2.4.0.tgz
+$ mv kafka_2.13-2.4.0 /usr/local/kafka
+Step 4: Change directory to kafka_2.11-2.3.0/bin. And start the Zookeeper server.
+
+$ ./zookeeper-server-start.sh ../config/zookeeper.properties
+
+Step 5: Start the Kafka server.
+
+$ ./kafka-server-start.sh ../config/server.properties
+
+Step 6: Now create a topic called 'csptest' with two partitions.
+
+$ ./kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 2 --topic csptest
+
+Step 7: Now start two listeners on topic csptest.
+
+$ ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic csptest --group topic_group
+
+Step 8: Start consumer to consume messages.
+
+$ ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic csptest --group topic_group
+
+Step 9: Now start a producer/publisher with the following command.
+
+$ ./kafka-console-producer.sh --broker-list localhost:9092 --topic csptest
+
+Step 10: To get the details of the topic.
+
+$ ./kafka-topics.sh --describe --zookeeper localhost:2181 --topic csptest
+
+Step 11: To get consumer details and offset details for each partition.
+
+$ ./kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group topic_group --describe
+
+Step 12: To list all topics.
+
+$ ./kafka-topics.sh --list --zookeeper localhost:2181
+Setting up a multi-broker cluster
+First we make a config file for each of the brokers (on Windows use the copy command instead): 
+> cp config/server.properties config/server-1.properties
+> cp config/server.properties config/server-2.properties
+
+Now edit these new files and set the following properties: 
+
+config/server-1.properties:
+	broker.id=1
+	listeners=PLAINTEXT://:9093
+	log.dirs=/tmp/kafka-logs-1
+config/server-2.properties:
+	broker.id=2
+	listeners=PLAINTEXT://:9094
+	log.dirs=/tmp/kafka-logs-2
+
+
